@@ -1,3 +1,28 @@
-http://www.macmusic.org/articles/view.php/lang/fr/id/22/Synthse-sonore   //vulgarisation de diférents types de synthèses sonore
+http://www.macmusic.org/articles/view.php/lang/fr/id/22/Synthse-sonore   //vulgarisation de différents types de synthèses sonore
 http://www.cim.mcgill.ca/~clark/nordmodularbook/nm_additive.html
-http://www.native-instruments.com/en/products/komplete/synths-samplers/razor/?utm_medium=email&utm_campaign=Razor&utm_source=newsletter  //un très bon synthétiseur utilisant la synthèse additive 8 27
+
+
+
+*** DIFFERENTS SYNTHETISEURS ADDITIFS ***
+
+
+-le Razor, le meilleur en terme d’innovation (surtout au niveau des controls) pour ma part
+et aussi parce que l’intégralité de ses effets est créé sur le principe de la synthèse additive.
+
+http://www.native-instruments.com/en/products/komplete/synths-samplers/razor/?utm_medium=email&utm_campaign=Razor&utm_source=newsletter  
+
+-le NOXIOUS bof bof.. on ne peux pas toucher aux partiels directement, mais seulement a partir de banque de son pré-définie et il n’y en a que 200 ça se ressent au niveau du son.
+
+http://zvork.fr/audio/noxious/
+
+-le PARSEC, énorme en terme de nombre de sinusoïde: 1024 partiels répartis sur deux oscillateurs
+
+http://www.propellerheads.se/products/reason/index.cfm?fuseaction=get_article&article=devices_parsec
+
+
+-le PHOSPHOR
+
+http://www.audiodamage.com/instruments/product.php?pid=AD027
+
+
+on remarque qu’il n’y a pour l’instant que le razor qui arrive a se démarquer d’un synthé classique, en effets la ou les autres synthés additifs cités plus haut essais de ressembler a des synthés numériques ou analogiques classiques, surement pour ne pas trop heurter le consommateur , les razor aborde la synthèse sonore de manière totalement différente et nous permet de rentrer réellement dans la création sonore grâce a la synthèse additive.
