@@ -1,5 +1,3 @@
-
-
 ;   Copyright (c) Rich Hickey. All rights reserved.
 ;   The use and distribution terms for this software are covered by the
 ;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
@@ -68,11 +66,20 @@
     :ascale [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0]
     :fscale [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0]}
 
+   :temp{:temp2 [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0]}
+
+
+
+
    :resonances
    {:toggle [1.0 1.0 0.0 0.0]
     :freq [0.5 0.65 0.1 0.1]
     :width [0.01 0.01 0.1 0.1]
     :gain [0.95 0.95 0.0 0.0]}})
+
+(def lookup-table {0 [1], 1 [0], 2 [0.82], 3 [0], 4 [0.74], 5 [0], 6 [0.66], 7 [0], 8 [0.58], 9 [0], 10 [0.5],
+                   11 [0],12 [0.42], 13 [0],14 [0.34],15 [0] ,16 [0.26], 17 [0] , 18 [0.18], 19 [0] ,20 [0.10],
+                   21 [0] ,22 [0.05] , 23 [0]})
 
 (defn patch-offsets [offset level]
   (cond
@@ -249,6 +256,14 @@
           env (ugen/env-gen:kr ectl)]
       (* (+ depth (bget bid :lfo :depth)) env (bget bid :lfo :toggle) (ugen/sin-osc:kr freq)))))
 
+(defn lookup-fn [map default]
+  (fn [x]
+    (if-let [ [k v]  (last (filter (fn[[k v]] (<= k x)) map ))  ]
+      v
+      default)))
+
+
+
 (defn res [sig bid n]
   (ugen/with-overloaded-ugens
     (* 10
@@ -388,6 +403,26 @@
               (update-in patch [(keyword s1) (keyword s2)]
                          #(reduce-kv (fn [ret i v] (assoc ret (+ i nba) v)) % (vec args)))))
 
+          "formant"
+          (let [nba (int(first args))]
+              (update-in (update-in patch [(keyword "harmonics") (keyword "gain")]
+                          #(reduce-kv (fn [ret i v] (assoc ret (+ i nba) v)) % ((lookup-fn lookup-table 0) nba )))
+                         [(keyword "temp") (keyword "temp2")]
+                          #(reduce-kv (fn [ret i v] (assoc ret (+ i nba) v)) % [( get (:gain (patch :harmonics)) nba)])))
+
+
+          "formant2"
+          (let [nba (int(first args))]
+               (update-in patch [(keyword "harmonics") (keyword "gain")]
+                          #(reduce-kv (fn [ret i v] (assoc ret (+ i nba) v)) % [( get  (:temp2 (patch :temp)) nba)])))
+
+          "formant3"
+          (let [nba (int(first args)) ]
+              (update-in patch [(keyword "harmonics") (keyword "ascale")]
+                          #(reduce-kv (fn [ret i v] (assoc ret (+ i (- nba 1)) v)) % [0 1 1 1 0])))
+
+
+
           "resonances"
           (assoc-in patch [(keyword s1) (keyword s2) (edn/read-string s3)] (first args))
 
@@ -434,6 +469,16 @@
 (osc/osc-handle server "/7"  (fn [_](for [i (range 10)] (transmit-patch cchan @apatch))))
 (osc/osc-handle server "/8"  (fn [_](for [i (range 10)] (transmit-patch cchan @apatch))))
 (osc/osc-handle server "/9"  (fn [_](for [i (range 10)] (transmit-patch cchan @apatch))))
+(osc/osc-handle server "/loadandsave/5/1"  (fn [_](reset! apatch (load-patch "testpatch1"))))
+(osc/osc-handle server "/loadandsave/5/2"  (fn [_](save-patch @apatch "testpatch1")))
+(osc/osc-handle server "/loadandsave/4/1"  (fn [_](reset! apatch (load-patch "testpatch2"))))
+(osc/osc-handle server "/loadandsave/4/2"  (fn [_](save-patch @apatch "testpatch2")))
+(osc/osc-handle server "/loadandsave/3/1"  (fn [_](reset! apatch (load-patch "testpatch3"))))
+(osc/osc-handle server "/loadandsave/3/2"  (fn [_](save-patch @apatch "testpatch3")))
+(osc/osc-handle server "/loadandsave/2/1"  (fn [_](reset! apatch (load-patch "testpatch4"))))
+(osc/osc-handle server "/loadandsave/2/2"  (fn [_](save-patch @apatch "testpatch4")))
+(osc/osc-handle server "/loadandsave/1/1"  (fn [_](reset! apatch (load-patch "testpatch5"))))
+(osc/osc-handle server "/loadandsave/1/2"  (fn [_](save-patch @apatch "testpatch5")))
 
 
 (osc/osc-rm-all-listeners server)
@@ -467,17 +512,27 @@
                                   (node/ctl synth :gate 0.0))))
                                   ::keyboard-handler-off)
 
+
+(osc/osc-listen server (fn [msg] (println msg)) :debug)
+
 (comment
   ;; Load a patch
 (patch->buf patch b)
 
   ;; Play a note
 (harmonikit (buf/buffer-id b) 70)
-
+(@apatch :temp)
+(:gain (@apatch :harmonics))
+  (:temp2 (@apatch :temp))
   ;; Stop the note
 (node/ctl *1 :gate 0)
-
+(save-patch patch "testpatch2")
   ;; Stop all notes
 (srv/stop)
+
+  [( get (:gain (patch :harmonics)) 2)]
+[(:temp (patch :harmonics))]
+
+  (osc/osc-listen server (fn [msg] (println msg)) :debug)
 
 )
