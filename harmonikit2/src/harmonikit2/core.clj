@@ -409,8 +409,9 @@
               (update-in (update-in patch [(keyword "harmonics") (keyword "gain")]
                           #(reduce-kv (fn [ret i v] (assoc ret (+ i nba) v)) % ((lookup-fn lookup-table 0) nba )))
                          [(keyword "temp") (keyword "temp2")]
-                          #(reduce-kv (fn [ret i v] (assoc ret (+ i nba) v)) % [( get (:gain (patch :harmonics)) nba)]))(patch)))
-
+                          #(reduce-kv (fn [ret i v] (assoc ret (+ i nba) v)) % [( get (:gain (patch :harmonics)) nba)]))
+              (update-in patch [(keyword "harmonics") (keyword "gain")]
+                          #(reduce-kv (fn [ret i v] (assoc ret (+ i nba) v)) % ((lookup-fn lookup-table 0) nba )))))
 
           "formant2"
           (let [nba (int(first args))]
@@ -453,7 +454,7 @@
 (def apatch (atom patch))
 (def server (osc/osc-server 4242))
 (osc/zero-conf-on)
-(def client (osc/osc-client "192.168.43.136" 8000));; à changer en fonction de l'adresse de la tablete sur touchosc
+(def client (osc/osc-client "192.168.0.40" 8000));; à changer en fonction de l'adresse de la tablete sur touchosc
 (def cchan (async/chan 10))
 (chan->client cchan client)
 (osc/osc-listen server (fn [msg] (println "Listener: " msg)) :debug)
