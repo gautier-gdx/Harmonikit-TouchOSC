@@ -454,7 +454,7 @@
 (def apatch (atom patch))
 (def server (osc/osc-server 4242))
 (osc/zero-conf-on)
-(def client (osc/osc-client "192.168.0.40" 8000));; à changer en fonction de l'adresse de la tablete sur touchosc
+(def client (osc/osc-client "192.168.0.43" 8000));; à changer en fonction de l'adresse de la tablete sur touchosc
 (def cchan (async/chan 10))
 (chan->client cchan client)
 (osc/osc-listen server (fn [msg] (println "Listener: " msg)) :debug)
